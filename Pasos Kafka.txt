@@ -1,0 +1,35 @@
+--APACHE KAFKA-----------------
+
+-- Herramienta para ver los topics visualmente: Offset explorer
+
+--iniciar servidores
+
+.\bin\windows\zookeeper-server-start.bat .\config\zookeeper.properties
+
+.\bin\windows\kafka-server-start.bat .\config\server.properties
+
+--crear topicos
+
+.\bin\windows\kafka-topics.bat --create --topic envio --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
+
+.\bin\windows\kafka-topics.bat --create --topic hotel_availability_searches --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
+
+
+--Enlistar topicos existentes
+
+.\bin\windows\kafka-topics.bat --list --bootstrap-server localhost:9092
+
+-- crear un consumidor y productor en consola
+
+.\bin\windows\kafka-console-producer.bat --broker-list localhost:9092 --topic hotel_availability_searches
+
+.\bin\windows\kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic hotel_availability_searches --from-beginning
+
+
+
+
+-- Detener Servicios
+
+.\bin\windows\kafka-server-stop.bat
+
+.\bin\windows\zookeeper-server-stop.bat
