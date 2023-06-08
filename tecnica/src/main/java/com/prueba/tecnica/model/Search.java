@@ -4,6 +4,7 @@ package com.prueba.tecnica.model;
 import jakarta.persistence.*;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.*;
 
 @Entity
@@ -16,9 +17,9 @@ public class Search {
     @Column(name ="hotelId")
     private String hotelId;
     @Column(name ="checkIn")
-    private Date checkIn;
+    private LocalDate checkIn;
     @Column(name ="checkOut")
-    private Date checkOut;
+    private LocalDate checkOut;
     @Column(name ="ages")
     private List<Integer> ages;
 
@@ -41,19 +42,19 @@ public class Search {
         this.hotelId = hotelId;
     }
 
-    public Date getCheckIn() {
+    public LocalDate getCheckIn() {
         return checkIn;
     }
 
-    public void setCheckIn(Date checkIn) {
+    public void setCheckIn(LocalDate checkIn) {
         this.checkIn = checkIn;
     }
 
-    public Date getCheckOut() {
+    public LocalDate getCheckOut() {
         return checkOut;
     }
 
-    public void setCheckOut(Date checkOut) {
+    public void setCheckOut(LocalDate checkOut) {
         this.checkOut = checkOut;
     }
 
@@ -62,15 +63,27 @@ public class Search {
     }
 
     public void setAges(List<Integer> ages) {
-        Collections.sort(ages);
+        sortAges(ages);
         this.ages = ages;
+
+    }
+
+    public void sortAges(List<Integer> ages){
+        Collections.sort(ages);
     }
 
     public Search() {
 
     }
 
-    public Search(String searchId, String hotelId, Date checkIn, Date checkOut, List<Integer> ages) {
+    public Search(String hotelId, LocalDate checkIn, LocalDate checkOut, List<Integer> ages) {
+        this.hotelId = hotelId;
+        this.checkIn = checkIn;
+        this.checkOut = checkOut;
+        this.ages = ages;
+    }
+
+    public Search(String searchId, String hotelId, LocalDate checkIn, LocalDate checkOut, List<Integer> ages) {
         this.searchId = searchId;
         this.hotelId = hotelId;
         this.checkIn = checkIn;

@@ -21,10 +21,13 @@ public class SearchConsumerService {
     }
 
     public Search save(Search search) {
-        System.out.println("Objeto Search recibido desde Kafka: " + search);
         // Guardar en la base de datos
         var result = searchRepository.save(search);
         return result;
 
+    }
+
+    public SearchRepository getSearchRepository() {
+        return searchRepository;
     }
 }

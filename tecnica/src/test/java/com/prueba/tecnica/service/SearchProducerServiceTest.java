@@ -1,15 +1,16 @@
 package com.prueba.tecnica.service;
 
 import com.prueba.tecnica.model.Search;
+import com.prueba.tecnica.model.SearchDTOAndSearchMapper;
 import com.prueba.tecnica.model.dto.SearchDTO;
+import com.prueba.tecnica.model.dto.SearchExtendedDTO;
 import com.prueba.tecnica.repository.SearchRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cglib.core.Local;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.kafka.core.KafkaTemplate;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,9 +45,13 @@ class SearchProducerServiceTest {
     @InjectMocks
     private SearchProducerService searchProducerService;
 
+    private SearchDTOAndSearchMapper searchMapper;
+
     @BeforeEach
     public void setup() {
+
         MockitoAnnotations.initMocks(this);
+        searchMapper = new SearchDTOAndSearchMapper();
     }
 
 
@@ -56,11 +62,14 @@ class SearchProducerServiceTest {
     @Test
     void saveSearch() throws ExecutionException, InterruptedException {
         //arrange
-        Long fecha = 1659542400000l; //fecha 03/08/2022
-        SearchDTO searchDto = new SearchDTO("idhotel",new Date(fecha),new Date(fecha), Arrays.asList(1, 2,3));
+        int dia = 03;
+        int mes = 8;
+        int anio = 2022;
+        LocalDate fechaLocal = LocalDate.of(anio,mes,dia);
+        SearchDTO searchDto = new SearchDTO("idhotel", fechaLocal,fechaLocal, Arrays.asList(1, 2,3));
 
 
-        Search search = new Search("id","idhotel",new Date(fecha),new Date(fecha), Arrays.asList(1, 2,3));
+        Search search = new Search("id","idhotel",fechaLocal,fechaLocal, Arrays.asList(1, 2,3));
 
         //mockito
         when(searchProducerService.getSearchRepository().save(any(Search.class))).thenReturn(search);
@@ -76,5 +85,41 @@ class SearchProducerServiceTest {
         assertTrue(search.equals(result));
 
     }
+
+
+    @Test
+    public void testObtenerSearchPorId() {
+        // Datos de prueba
+        String searchId = "searchId";
+        Long countRecords = 1L;
+        int dia = 03;
+        int mes = 8;
+        int anio = 2022;
+        LocalDate fechaLocal = LocalDate.of(anio,mes,dia);
+
+        // Mock del repositorio
+        when(searchProducerService.getSearchRepository().findCountingMatchingRecords(searchId)).thenReturn(countRecords);
+
+        // Mock del objeto de búsqueda
+        Search searchObject = new Search("hotelId", fechaLocal,fechaLocal, Arrays.asList(1,2,3));
+        when(searchProducerService.getSearchRepository().findById(searchId)).thenReturn(Optional.of(searchObject));
+
+        // Mock del mapeo de búsqueda a DTO
+        SearchDTO searchDTO = new SearchDTO("hotelId", fechaLocal,fechaLocal, Arrays.asList(1,2,3) );
+//        when(searchProducerService.getSearchMapper().mapSearchToSearchDTO(searchObject)).thenReturn(searchDTO);
+
+        // Llamada al método a probar
+        SearchExtendedDTO result = searchProducerService.obtenerSearchPorId(searchId);
+
+        // Verificación de resultados
+        assertNotNull(result);
+        assertEquals(searchId, result.getSearchId());
+        assertTrue(searchDTO.equals(result.getSearch()));
+        assertEquals(countRecords, result.getCount());
+
+        // Verificación de invocaciones de métodos en el repositorio y el mapper
+
+    }
+
 
 }

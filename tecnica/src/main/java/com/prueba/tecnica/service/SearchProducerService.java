@@ -2,6 +2,7 @@ package com.prueba.tecnica.service;
 
 
 import com.prueba.tecnica.model.Search;
+import com.prueba.tecnica.model.SearchDTOAndSearchMapper;
 import com.prueba.tecnica.model.dto.SearchDTO;
 import com.prueba.tecnica.model.dto.SearchExtendedDTO;
 import com.prueba.tecnica.repository.SearchRepository;
@@ -16,7 +17,7 @@ import java.util.concurrent.ExecutionException;
 
 @Service
 public class SearchProducerService {
-    private ModelMapper modelMapper ;
+    private final SearchDTOAndSearchMapper searchMapper ;
     private final SearchRepository searchRepository;
     private final KafkaTemplate<String, Search> kafkaTemplate;
 
@@ -26,20 +27,16 @@ public class SearchProducerService {
     public SearchProducerService(SearchRepository searchRepository, KafkaTemplate<String, Search> kafkaTemplate) {
         this.searchRepository = searchRepository;
         this.kafkaTemplate = kafkaTemplate;
-        modelMapper = new ModelMapper();
+        searchMapper = new SearchDTOAndSearchMapper();
     }
 
 
 
     public Search saveSearch(final SearchDTO searchDto) throws ExecutionException, InterruptedException {
-    //validar payload
-        //var result = searchRepository.findBySearchParams(search.getHotelId(),search.getCheckIn(),search.getCheckOut(),search.getAges());
-        //Search savedSearch = searchRepository.save(search);
 
-        var search = modelMapper.map(searchDto, Search.class);
+        var search = searchMapper.mapSearchDTOToSearch(searchDto);
         search.generateSearchID();
 
-        //searchRepository.save(search);
         var response = kafkaTemplate.send(KAFKA_TOPIC_ENVIO, search); // Publicar el objeto Search en Kafka
 
         return search;
@@ -50,7 +47,7 @@ public class SearchProducerService {
         var countRecords = searchRepository.findCountingMatchingRecords(searchId);
         if (countRecords>0){
             var searchObject = searchRepository.findById(searchId);
-            var searchDTO = modelMapper.map(searchObject.get(), SearchDTO.class);
+            var searchDTO = searchMapper.mapSearchToSearchDTO(searchObject.get());
             searchExtendedDTO = new SearchExtendedDTO(searchId, searchDTO, countRecords);
 
         }
@@ -59,12 +56,15 @@ public class SearchProducerService {
     }
     // Otros métodos de servicio según sea necesario
 
-
     public SearchRepository getSearchRepository() {
         return searchRepository;
     }
 
     public KafkaTemplate<String, Search> getKafkaTemplate() {
         return kafkaTemplate;
+    }
+
+    public SearchDTOAndSearchMapper getSearchMapper() {
+        return searchMapper;
     }
 }

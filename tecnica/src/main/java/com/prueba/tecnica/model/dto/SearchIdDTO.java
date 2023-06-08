@@ -1,7 +1,7 @@
 package com.prueba.tecnica.model.dto;
 
 public class SearchIdDTO {
-    private String searchId;
+    private final String searchId;
 
     public SearchIdDTO(String searchId) {
         this.searchId = searchId;
@@ -13,7 +13,4 @@ public class SearchIdDTO {
         return searchId;
     }
 
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
-    }
 }

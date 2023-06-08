@@ -15,10 +15,12 @@ import java.util.Map;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 
 @Configuration
+
 public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
+
 
     @Bean
     public ProducerFactory<String, Search> producerFactory() {

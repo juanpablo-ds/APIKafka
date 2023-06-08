@@ -22,14 +22,17 @@ public class SearchConsumer {
     }
     @KafkaListener(topics = "${spring.kafka.topic}",
     containerFactory = "kafkaListenerContainerFactory")
-    public Search consume(ConsumerRecord<String, Search> record) {
+    public Search consume(final ConsumerRecord<String, Search> record) {
         Search search = record.value();
-        // Procesar el objeto Search recibido desde Kafka
-        System.out.println("Objeto Search recibido desde Kafka: " + search);
+
         // Guardar en la base de datos
         searchConsumerService.save(search);
         // Realizar cualquier otro procesamiento necesario
         // Devolver el objeto Search procesado
         return search;
+    }
+
+    public SearchConsumerService getSearchConsumerService() {
+        return searchConsumerService;
     }
 }

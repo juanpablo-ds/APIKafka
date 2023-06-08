@@ -1,10 +1,12 @@
 package com.prueba.tecnica.model.dto;
 
+import java.util.Objects;
+
 public class SearchExtendedDTO {
 
-    private String searchId;
-    private SearchDTO search;
-    private long count;
+    private  final String searchId;
+    private  final SearchDTO search;
+    private final long count;
 
 
     public SearchExtendedDTO(String searchId, SearchDTO search, long count) {
@@ -13,32 +15,36 @@ public class SearchExtendedDTO {
         this.count = count;
     }
 
-    public SearchExtendedDTO() {
 
-    }
 
 
     public String getSearchId() {
         return searchId;
     }
 
-    public void setSearchId(String searchId) {
-        this.searchId = searchId;
-    }
+
 
     public SearchDTO getSearch() {
         return search;
     }
 
-    public void setSearch(SearchDTO search) {
-        this.search = search;
-    }
+
 
     public long getCount() {
         return count;
     }
 
-    public void setCount(long count) {
-        this.count = count;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        SearchExtendedDTO myClass = (SearchExtendedDTO) o;
+        return count == myClass.count &&
+                Objects.equals(searchId, myClass.searchId) &&
+                search.equals( myClass.search);
     }
 }
